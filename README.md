@@ -4,6 +4,8 @@ Blue State Digital PHP API Client
 Requirements
 ------------
 
+* PHP 5.2.x+
+* The PHP curl extension (http://php.net/curl) or the PECL http extension (http://php.net/http)
 
 Installing
 ----------
