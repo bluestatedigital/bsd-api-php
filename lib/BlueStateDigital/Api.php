@@ -162,7 +162,7 @@ class BlueStateDigital_Api
         // if the response code isn't HTTP_CODE_OK then we didn't get the result we wanted
         if (!in_array($result->code, array(self::HTTP_CODE_OK, self::HTTP_CODE_DEFERRED_RESULT_EMPTY))) {
             // did we go over our "max attempts"?
-            if ($iteration >= $this->deferred_result_call_max_attempts) {
+            if ($attempt >= $this->deferred_result_call_max_attempts) {
                 throw new Exception('Could not retrieve deferred result.  Max attempts reached.', 1);
             }
             // we must have received an unexpected HTTP code
