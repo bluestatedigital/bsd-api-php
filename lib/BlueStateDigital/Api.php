@@ -131,6 +131,11 @@ class BlueStateDigital_Api
         // break URL into parts to get the path
         $url_parts = parse_url($url);
 
+        // trim double slashes in the path
+        if (substr($url_parts['path'], 0, 2) == '//') {
+            $url_parts['path'] = substr($url_parts['path'], 1);
+        }
+
         // build query string from given parameters
         $query_string = urldecode(http_build_query($query));
 
@@ -139,6 +144,7 @@ class BlueStateDigital_Api
             $query['api_ts'] . "\n" .
             $url_parts['path'] . "\n" .
             $query_string;
+        var_dump($signing_string); exit;
 
         return hash_hmac('sha1', $signing_string, $this->api_secret);
     }
