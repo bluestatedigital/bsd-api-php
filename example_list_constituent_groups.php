@@ -34,7 +34,7 @@ ini_set('display_errors', 1);
 
 $api_id = ''; // your API ID
 $api_secret = ''; // your API Secret
-$api_url = ''; // your BSD URL - e.g. https://client.cp.bsd.net/
+$api_url = ''; // your BSD URL - e.g. https://client.cp.bsd.net
 
 require 'autoload.php';
 
