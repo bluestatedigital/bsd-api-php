@@ -26,7 +26,7 @@ class BlueStateDigital_Api
     const HTTP_CODE_OK                          = 200;
     const HTTP_CODE_DEFERRED_RESULT             = 202;
     const HTTP_CODE_DEFERRED_RESULT_EMPTY       = 204;
-    const HTTP_CODE_DEFERRED_RESULT_COMPILING   = 503;
+    const HTTP_CODE_DEFERRED_RESULT_COMPILING   = 202;
 
     const API_VER = 2;
 
@@ -47,6 +47,20 @@ class BlueStateDigital_Api
     }
 
     public function get($url, $query_params = array())
+    {
+        $result = $this->_get($url, $query_params = array());
+
+        // is this a deferred result?
+        if ($result->code == self::HTTP_CODE_DEFERRED_RESULT) {
+            // reroute this request for more processing. the _deferredResult function should
+            // return a new HTTP_Request object with the actual requested content
+            $result = $this->_deferredResult($result->getBody());
+        }
+
+        return $result;
+    }
+
+    protected function _get($url, $query_params = array())
     {
         // prepend URL with base path for the API
         $url = $this->http_request_base . $url;
@@ -72,16 +86,7 @@ class BlueStateDigital_Api
         ));
 
         // send request to API url
-        $result = $client->get($url);
-
-        // is this a deferred result?
-        if ($result->code == self::HTTP_CODE_DEFERRED_RESULT) {
-            // reroute this request for more processing. the _deferredResult function should
-            // return a new HTTP_Request object with the actual requested content
-            $result = $this->_deferredResult($result->getBody());
-        }
-
-        return $result;
+        return $client->get($url);
     }
 
     public function post($url, $query_params = array(), $post_data = '')
@@ -158,7 +163,7 @@ class BlueStateDigital_Api
             sleep($this->deferred_result_call_interval);
 
             // check to see if result is ready
-            $result = $this->get('get_deferred_results', array('deferred_id' => $deferred_id));
+            $result = $this->_get('get_deferred_results', array('deferred_id' => $deferred_id));
 
             // increment attempts counter
             $attempt++;
