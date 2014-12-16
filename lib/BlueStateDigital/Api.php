@@ -144,7 +144,6 @@ class BlueStateDigital_Api
             $query['api_ts'] . "\n" .
             $url_parts['path'] . "\n" .
             $query_string;
-        var_dump($signing_string); exit;
 
         return hash_hmac('sha1', $signing_string, $this->api_secret);
     }
