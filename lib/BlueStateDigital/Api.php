@@ -48,7 +48,7 @@ class BlueStateDigital_Api
 
     public function get($url, $query_params = array())
     {
-        $result = $this->_get($url, $query_params = array());
+        $result = $this->_get($url, $query_params);
 
         // is this a deferred result?
         if ($result->code == self::HTTP_CODE_DEFERRED_RESULT) {
