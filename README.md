@@ -10,6 +10,16 @@ Requirements
 Installing
 ----------
 
+Add this library to `composer.json`:
+
+```
+{
+    "require": {
+        "bluestatedigital/tools-api-client": "~1.0"
+    }
+}
+```
+
 
 License
 -------

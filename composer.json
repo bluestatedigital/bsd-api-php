@@ -1,0 +1,9 @@
+{
+  "name": "bluestatedigital/tools-api-client",
+  "description": "Client library for the BSD Tools API",
+  "autoload": {
+    "files": [
+      "autoload.php"
+    ]
+  }
+}
