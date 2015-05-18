@@ -6,7 +6,8 @@ use GuzzleHttp\Message\ResponseInterface;
 use GuzzleHttp\Url;
 use RuntimeException;
 
-class MessageFactory extends \GuzzleHttp\Message\MessageFactory {
+class MessageFactory extends \GuzzleHttp\Message\MessageFactory
+{
 
     /**
      * Create a new request based on the HTTP method.

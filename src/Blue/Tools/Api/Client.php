@@ -10,7 +10,8 @@ use Psr\Log\NullLogger;
 use RuntimeException;
 use GuzzleHttp\Client as GuzzleClient;
 
-class Client {
+class Client
+{
 
     //--------------------
     // Constants
@@ -61,8 +62,8 @@ class Client {
      * @param string $secret
      * @param string $url
      */
-    public function __construct($id, $secret, $url) {
-
+    public function __construct($id, $secret, $url)
+    {
         $this->logger = new NullLogger();
 
         if (!strlen($id) || !strlen($secret)) {
@@ -93,8 +94,8 @@ class Client {
      * @param array $queryParams
      * @return ResponseInterface
      */
-    public function get($apiPath, $queryParams = []) {
-
+    public function get($apiPath, $queryParams = [])
+    {
         $response = $this->guzzleClient->get(
             $this->baseUrl . $apiPath,
             [
@@ -120,7 +121,8 @@ class Client {
      * @param string $data
      * @return ResponseInterface
      */
-    public function post($apiPath, $queryParams = [], $data = '') {
+    public function post($apiPath, $queryParams = [], $data = '')
+    {
 
         $response = $this->guzzleClient->post(
             $this->baseUrl . $apiPath,
@@ -144,7 +146,8 @@ class Client {
      * @param ResponseInterface $response
      * @return FutureResponse|Response|\GuzzleHttp\Message\ResponseInterface|\GuzzleHttp\Ring\Future\FutureInterface|null
      */
-    private function resolve(ResponseInterface $response) {
+    private function resolve(ResponseInterface $response)
+    {
 
         // An HTTP status of 202 indicates that this request was deferred
         if ($response->getStatusCode() == 202) {
@@ -216,7 +219,8 @@ class Client {
     /**
      * @param LoggerInterface $logger
      */
-    public function setLogger(LoggerInterface $logger) {
+    public function setLogger(LoggerInterface $logger)
+    {
         $this->logger = $logger;
     }
 }

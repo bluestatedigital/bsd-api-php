@@ -8,7 +8,8 @@ use InvalidArgumentException;
 use PHPUnit_Framework_TestCase;
 use RuntimeException;
 
-class ClientTest extends PHPUnit_Framework_TestCase {
+class ClientTest extends PHPUnit_Framework_TestCase
+{
 
     /**
      * @scenario Constructor should handle invalid inputs
@@ -19,8 +20,8 @@ class ClientTest extends PHPUnit_Framework_TestCase {
      * @param $secret
      * @param $url
      */
-    public function testValidClient($id, $secret, $url) {
-
+    public function testValidClient($id, $secret, $url)
+    {
         $client = new Client($id, $secret, $url);
         $this->fail('Constructor was successful with invalid data');
 
@@ -131,5 +132,4 @@ class ClientTest extends PHPUnit_Framework_TestCase {
         $content = $response->getBody()->getContents();
 
     }
-
 }
