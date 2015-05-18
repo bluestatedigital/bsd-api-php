@@ -36,7 +36,6 @@ class ClientTest extends PHPUnit_Framework_TestCase {
     }
 
 
-
     /**
      * @scenario A non-deferred response should have content available immediately
      */

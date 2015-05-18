@@ -63,29 +63,31 @@ class MessageFactory extends \GuzzleHttp\Message\MessageFactory {
         $id = $auth[0];
         $secret = $auth[1];
 
-
+        // Add API User ID to the query
         $query->set('api_id', $id);
 
+        // Add timestamp to the query
         if (!$query->hasKey('api_ts')) {
             $query->set('api_ts', time());
         }
 
+        // Add version to the query
         $query->set('api_ver', '2');
 
+        // Add hash to the query
         $hash = $this->generateMac($request->getUrl(), $request->getQuery()->toArray(), $secret);
-
         $query->set('api_mac', $hash);
-
 
         return $request;
     }
 
+
     /**
      * Creates a hash based on request parameters
      *
-     * @param $url
-     * @param $query
-     * @param $secret
+     * @param string $url
+     * @param array $query
+     * @param string $secret
      * @return string
      */
     private function generateMac($url, $query, $secret)
@@ -113,6 +115,7 @@ class MessageFactory extends \GuzzleHttp\Message\MessageFactory {
         return $mac;
     }
 
+
     /**
      * Creates a response
      *
@@ -135,5 +138,4 @@ class MessageFactory extends \GuzzleHttp\Message\MessageFactory {
     {
         return parent::createResponse($statusCode, $headers, $body, $options);
     }
-
 }

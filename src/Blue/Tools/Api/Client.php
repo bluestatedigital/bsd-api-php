@@ -12,12 +12,19 @@ use GuzzleHttp\Client as GuzzleClient;
 
 class Client {
 
+    //--------------------
+    // Constants
+    //--------------------
+
     /** @var int */
     static $VERSION = 2;
 
     /** @var string */
     static $AUTH_TYPE = 'bsdtools_v2';
 
+    //--------------------
+    // Credentials
+    //--------------------
 
     /** @var string */
     private $id;
@@ -28,27 +35,35 @@ class Client {
     /** @var string */
     private $secret;
 
+    //--------------------
+    // Configuration
+    //--------------------
+
     /** @var int */
     private $deferredResultMaxAttempts = 20;
 
     /** @var int */
     private $deferredResultInterval = 5;
 
+    //--------------------
+    // Other internals
+    //--------------------
+
     /** @var LoggerInterface */
     private $logger;
 
-    /** @var \GuzzleHttp\Client */
+    /** @var GuzzleClient */
     private $guzzleClient;
 
 
+    /**
+     * @param string $id
+     * @param string $secret
+     * @param string $url
+     */
     public function __construct($id, $secret, $url) {
 
         $this->logger = new NullLogger();
-        $this->guzzleClient = new GuzzleClient(
-            [
-                'message_factory' => new MessageFactory()
-            ]
-        );
 
         if (!strlen($id) || !strlen($secret)) {
             throw new InvalidArgumentException('api_id and api_secret must both be provided');
@@ -62,11 +77,14 @@ class Client {
         $this->id = $id;
         $this->secret = $secret;
         $this->baseUrl = $validatedUrl . '/page/api/';
+
+        $this->guzzleClient = new GuzzleClient(
+            [
+                'message_factory' => new MessageFactory()
+            ]
+        );
     }
 
-    public function setLogger(LoggerInterface $logger) {
-        $this->logger = $logger;
-    }
 
     /**
      * Execute a GET request against the API
@@ -91,8 +109,8 @@ class Client {
         );
 
         return $this->resolve($response);
-
     }
+
 
     /**
      * Execute a POST request against the API
@@ -128,6 +146,7 @@ class Client {
      */
     private function resolve(ResponseInterface $response) {
 
+        // An HTTP status of 202 indicates that this request was deferred
         if ($response->getStatusCode() == 202) {
 
             $key = $response->getBody()->getContents();
@@ -135,6 +154,7 @@ class Client {
             $attempts = $this->deferredResultMaxAttempts;
 
             while($attempts > 0) {
+                /** @var ResponseInterface $deferredResponse */
                 $deferredResponse = $this->guzzleClient->get(
                     $this->baseUrl . "get_deferred_results",
                     [
@@ -159,15 +179,11 @@ class Client {
             }
 
             throw new RuntimeException("Could not load deferred response after {$this->deferredResultMaxAttempts} attempts");
-
         }
 
+        // If the request was not deferred, then return as-is
         return $response;
-
     }
-
-
-
 
 
     /**
@@ -178,6 +194,7 @@ class Client {
         $this->deferredResultMaxAttempts = $deferredResultMaxAttempts;
     }
 
+
     /**
      * @param int $deferredResultInterval
      */
@@ -185,6 +202,7 @@ class Client {
     {
         $this->deferredResultInterval = $deferredResultInterval;
     }
+
 
     /**
      * @return GuzzleClient
@@ -195,5 +213,10 @@ class Client {
     }
 
 
-
+    /**
+     * @param LoggerInterface $logger
+     */
+    public function setLogger(LoggerInterface $logger) {
+        $this->logger = $logger;
+    }
 }

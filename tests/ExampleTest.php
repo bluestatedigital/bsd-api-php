@@ -31,8 +31,6 @@ class ExampleTest extends PHPUnit_Framework_TestCase {
             $contents = $response->getBody()->getContents();
 
             echo $contents;
-
         }
     }
-
 }
