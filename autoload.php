@@ -23,7 +23,9 @@
  * to your include path.
  */
 
-function __autoload($class)
-{
-    include __DIR__ . '/lib/' . str_replace('_', '/', $class) . '.php';
-}
+spl_autoload_register(
+    function($class)
+    {
+        include __DIR__ . '/lib/' . str_replace('_', '/', $class) . '.php';
+    }
+);

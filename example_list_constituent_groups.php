@@ -36,7 +36,7 @@ $api_id = ''; // your API ID
 $api_secret = ''; // your API Secret
 $api_url = ''; // your BSD URL - e.g. https://client.cp.bsd.net
 
-require 'autoload.php';
+require 'vendor/autoload.php';
 
 $api = new BlueStateDigital_Api($api_id, $api_secret, $api_url);
 $res = $api->get('cons_group/list_constituent_groups');
