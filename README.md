@@ -6,6 +6,8 @@ This library provides an interface to the BSD Tools.
 Example usage:
 
 ```
+use Blue\Tools\Api\Client;
+
 $client = new Client('user_id', 'secret', 'https://baseurl.com');
 
 /** @var ResponseInterface $response */
