@@ -18,10 +18,10 @@ class Client
     //--------------------
 
     /** @var int */
-    static private $VERSION = 2;
+    static public $VERSION = 2;
 
     /** @var string */
-    static private $AUTH_TYPE = 'bsdtools_v2';
+    static public $AUTH_TYPE = 'bsdtools_v2';
 
     //--------------------
     // Credentials
