@@ -135,8 +135,7 @@ class MessageFactory extends \GuzzleHttp\Message\MessageFactory
         array $headers = [],
         $body = null,
         array $options = []
-    )
-    {
+    ) {
         return parent::createResponse($statusCode, $headers, $body, $options);
     }
 }
