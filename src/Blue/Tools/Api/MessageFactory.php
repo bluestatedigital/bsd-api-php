@@ -52,7 +52,7 @@ class MessageFactory extends \GuzzleHttp\Message\MessageFactory
     {
         $request = parent::createRequest($method, $url, $options);
 
-        $query =$request->getQuery();
+        $query = $request->getQuery();
 
         $auth = $request->getConfig()->get('auth');
 

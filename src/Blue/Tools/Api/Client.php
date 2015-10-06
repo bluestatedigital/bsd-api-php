@@ -18,10 +18,10 @@ class Client
     //--------------------
 
     /** @var int */
-    static $VERSION = 2;
+    public static $VERSION = 2;
 
     /** @var string */
-    static $AUTH_TYPE = 'bsdtools_v2';
+    public static $AUTH_TYPE = 'bsdtools_v2';
 
     //--------------------
     // Credentials
@@ -156,7 +156,7 @@ class Client
 
             $attempts = $this->deferredResultMaxAttempts;
 
-            while($attempts > 0) {
+            while ($attempts > 0) {
                 /** @var ResponseInterface $deferredResponse */
                 $deferredResponse = $this->guzzleClient->get(
                     $this->baseUrl . "get_deferred_results",
