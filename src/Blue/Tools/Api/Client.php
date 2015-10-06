@@ -223,4 +223,26 @@ class Client
     {
         $this->logger = $logger;
     }
+
+    /**
+     * Returns the specified request option or all options if none specified
+     * @param null $keyOrPath
+     * @return array|mixed|null
+     */
+    public function getRequestOption($keyOrPath = null)
+    {
+        return $this->guzzleClient->getDefaultOption($keyOrPath);
+    }
+
+    /**
+     * Sets a request option for future requests
+     * @param $keyOrPath
+     * @param $value
+     * @return $this
+     */
+    public function setRequestOption($keyOrPath, $value)
+    {
+        $this->guzzleClient->setDefaultOption($keyOrPath, $value);
+        return $this;
+    }
 }
