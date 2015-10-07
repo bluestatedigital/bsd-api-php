@@ -18,10 +18,10 @@ class Client
     //--------------------
 
     /** @var int */
-    static $VERSION = 2;
+    public static $VERSION = 2;
 
     /** @var string */
-    static $AUTH_TYPE = 'bsdtools_v2';
+    public static $AUTH_TYPE = 'bsdtools_v2';
 
     //--------------------
     // Credentials
@@ -156,7 +156,7 @@ class Client
 
             $attempts = $this->deferredResultMaxAttempts;
 
-            while($attempts > 0) {
+            while ($attempts > 0) {
                 /** @var ResponseInterface $deferredResponse */
                 $deferredResponse = $this->guzzleClient->get(
                     $this->baseUrl . "get_deferred_results",
@@ -222,5 +222,27 @@ class Client
     public function setLogger(LoggerInterface $logger)
     {
         $this->logger = $logger;
+    }
+
+    /**
+     * Returns the specified request option or all options if none specified
+     * @param null $keyOrPath
+     * @return array|mixed|null
+     */
+    public function getRequestOption($keyOrPath = null)
+    {
+        return $this->guzzleClient->getDefaultOption($keyOrPath);
+    }
+
+    /**
+     * Sets a request option for future requests
+     * @param $keyOrPath
+     * @param $value
+     * @return $this
+     */
+    public function setRequestOption($keyOrPath, $value)
+    {
+        $this->guzzleClient->setDefaultOption($keyOrPath, $value);
+        return $this;
     }
 }
