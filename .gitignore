@@ -31,3 +31,5 @@ vendor/
 
 #IDE
 .idea
+
+composer.lock
