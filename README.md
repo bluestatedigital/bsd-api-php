@@ -33,3 +33,12 @@ Update `composer.json`:
     "bluestatedigital/tools-api-client": "~2.0"
 }
 ```
+
+Handling Responses
+------------------
+
+By default the API client uses Guzzle's RequestException for any responses above HTTP 300. To use your own handler you may either create your own Guzzle error plugin or emitter (see Guzzle 5 documentation), or disable Guzzle's handler entirely by using the following code:
+```
+// Prevent Exceptions on non-actionable HTTP response (400 and 500 range)
+$client->setRequestOption('exceptions', false);
+```
