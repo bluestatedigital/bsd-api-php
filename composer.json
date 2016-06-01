@@ -3,8 +3,9 @@
   "description": "Client library for the BSD Tools API",
   "license": "Apache-2.0",
   "require": {
-    "guzzlehttp/guzzle": "~5.0",
-    "psr/log": "1.0"
+    "guzzlehttp/guzzle": "~6.0",
+    "psr/log": "1.0",
+    "league/uri": "~4.0"
   },
   "require-dev": {
     "phpunit/phpunit": "3.7.*@dev",

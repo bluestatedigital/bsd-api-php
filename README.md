@@ -30,7 +30,7 @@ Installation
 Update `composer.json`:
 ```
 "require": {
-    "bluestatedigital/tools-api-client": "~2.0"
+    "bluestatedigital/tools-api-client": "~3.0"
 }
 ```
 
