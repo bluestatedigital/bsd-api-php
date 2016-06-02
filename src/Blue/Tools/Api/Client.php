@@ -82,7 +82,7 @@ class Client
         $this->secret = $secret;
         $this->baseUrl = $validatedUrl.'/page/api/';
 
-        $handlerStack = HandlerStack::create(GuzzleHttp\choose_handler());
+        $handlerStack = HandlerStack::create();
         $handlerStack->push(Middleware::mapRequest(
             function (RequestInterface $request) {
                 $uri = $request->getUri();
@@ -101,7 +101,7 @@ class Client
                  */
                 if (!$query->hasKey('api_ts')) {
                     $query = $query->merge(Query::createFromArray([
-                        'api_ts', time(),
+                        'api_ts' => time(),
                     ]));
                 }
                 $query = $query->merge(Query::createFromArray([
@@ -215,17 +215,16 @@ class Client
     private function generateMac($path, Query $query)
     {
         // build query string from given parameters
-        $queryString = (string) $query;
+        $queryString = urldecode((string) $query);
 
         // combine strings to build the signing string
         $apiId = $query->getValue('api_id');
         $apiTs = $query->getValue('api_ts');
-        $signingString = $apiId."\n".
-            $apiTs."\n".
-            $path."\n".
-            $queryString;
+        $signingString = $apiId."\n"
+            .$apiTs."\n"
+            .$path."\n"
+            .$queryString;
         $mac = hash_hmac('sha1', $signingString, $this->secret);
-
         return $mac;
     }
 
