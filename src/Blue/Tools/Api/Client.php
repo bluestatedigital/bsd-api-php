@@ -2,6 +2,7 @@
 
 namespace Blue\Tools\Api;
 
+
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\HandlerStack;
 use InvalidArgumentException;
@@ -217,8 +218,10 @@ class Client
     }
 
     /**
-     * Returns the specified request option or all options if none specified
+     * Returns the specified request option or all options if none specified.
+     *
      * @param null $keyOrPath
+     *
      * @return array|mixed|null
      */
     public function getRequestOption($keyOrPath = null)
@@ -227,9 +230,11 @@ class Client
     }
 
     /**
-     * Sets a request option for future requests
+     * Sets a request option for future requests.
+     *
      * @param $key
      * @param $value
+     *
      * @return $this
      */
     public function setRequestOption($key, $value)
