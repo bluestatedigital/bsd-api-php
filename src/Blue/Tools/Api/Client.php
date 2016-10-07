@@ -1,14 +1,13 @@
 <?php
 namespace Blue\Tools\Api;
 
-use GuzzleHttp\Message\FutureResponse;
-use GuzzleHttp\Message\Response;
-use GuzzleHttp\Message\ResponseInterface;
+use GuzzleHttp\Client as GuzzleClient;
+use GuzzleHttp\HandlerStack;
 use InvalidArgumentException;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use RuntimeException;
-use GuzzleHttp\Client as GuzzleClient;
 
 class Client
 {
@@ -56,13 +55,13 @@ class Client
     /** @var GuzzleClient */
     private $guzzleClient;
 
-
     /**
      * @param string $id
      * @param string $secret
      * @param string $url
+     * @param array $requestOptions
      */
-    public function __construct($id, $secret, $url)
+    public function __construct($id, $secret, $url, array $requestOptions = [])
     {
         $this->logger = new NullLogger();
 
@@ -79,13 +78,26 @@ class Client
         $this->secret = $secret;
         $this->baseUrl = $validatedUrl . '/page/api/';
 
-        $this->guzzleClient = new GuzzleClient(
-            [
-                'message_factory' => new MessageFactory()
-            ]
-        );
+        $this->guzzleClient = $this->createGuzzleClient(null, $requestOptions);
     }
 
+    /**
+     * @param null|callable $baseHandler
+     * @param array $options
+     * @return \GuzzleHttp\Client
+     */
+    protected function createGuzzleClient($baseHandler = null, array $options = [])
+    {
+        $stack = HandlerStack::create($baseHandler);
+
+        $stack->push(function (callable $handler) {
+            return new SigningHandler($handler);
+        }, 'sign_request');
+
+        $options['handler'] = $stack;
+
+        return new GuzzleClient($options);
+    }
 
     /**
      * Execute a GET request against the API
@@ -104,14 +116,13 @@ class Client
                 'auth' => [
                     $this->id,
                     $this->secret,
-                    self::$AUTH_TYPE
+                    self::$AUTH_TYPE,
                 ],
             ]
         );
 
         return $this->resolve($response);
     }
-
 
     /**
      * Execute a POST request against the API
@@ -133,7 +144,7 @@ class Client
                 'auth' => [
                     $this->id,
                     $this->secret,
-                    self::$AUTH_TYPE
+                    self::$AUTH_TYPE,
                 ],
             ]
         );
@@ -141,10 +152,21 @@ class Client
         return $this->resolve($response);
     }
 
+    /**
+     * @param callable $handler
+     * @param array $options
+     * @return $this
+     */
+    public function withHandler(callable $handler, array $options = [])
+    {
+        $this->guzzleClient = $this->createGuzzleClient($handler, $options);
+
+        return $this;
+    }
 
     /**
      * @param ResponseInterface $response
-     * @return FutureResponse|Response|\GuzzleHttp\Message\ResponseInterface|\GuzzleHttp\Ring\Future\FutureInterface|null
+     * @return ResponseInterface
      */
     private function resolve(ResponseInterface $response)
     {
@@ -164,12 +186,12 @@ class Client
                         'auth' => [
                             $this->id,
                             $this->secret,
-                            self::$AUTH_TYPE
+                            self::$AUTH_TYPE,
                         ],
                         'future' => false,
                         'query' => [
-                            'deferred_id' => $key
-                        ]
+                            'deferred_id' => $key,
+                        ],
                     ]
                 );
 
@@ -188,7 +210,6 @@ class Client
         return $response;
     }
 
-
     /**
      * @param int $deferredResultMaxAttempts
      */
@@ -196,7 +217,6 @@ class Client
     {
         $this->deferredResultMaxAttempts = $deferredResultMaxAttempts;
     }
-
 
     /**
      * @param int $deferredResultInterval
@@ -206,7 +226,6 @@ class Client
         $this->deferredResultInterval = $deferredResultInterval;
     }
 
-
     /**
      * @return GuzzleClient
      */
@@ -214,7 +233,6 @@ class Client
     {
         return $this->guzzleClient;
     }
-
 
     /**
      * @param LoggerInterface $logger
@@ -224,25 +242,4 @@ class Client
         $this->logger = $logger;
     }
 
-    /**
-     * Returns the specified request option or all options if none specified
-     * @param null $keyOrPath
-     * @return array|mixed|null
-     */
-    public function getRequestOption($keyOrPath = null)
-    {
-        return $this->guzzleClient->getDefaultOption($keyOrPath);
-    }
-
-    /**
-     * Sets a request option for future requests
-     * @param $keyOrPath
-     * @param $value
-     * @return $this
-     */
-    public function setRequestOption($keyOrPath, $value)
-    {
-        $this->guzzleClient->setDefaultOption($keyOrPath, $value);
-        return $this;
-    }
 }

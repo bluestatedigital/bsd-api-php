@@ -1,4 +1,5 @@
 <?php
+
 use Blue\Tools\Api\Client;
 
 class ExampleTest extends PHPUnit_Framework_TestCase
@@ -25,7 +26,7 @@ class ExampleTest extends PHPUnit_Framework_TestCase
             $response = $client->get(
                 "cons/get_constituents_by_id",
                 [
-                    'cons_ids' => '1'
+                    'cons_ids' => '1',
                 ]
             );
 

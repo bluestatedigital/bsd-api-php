@@ -10,7 +10,7 @@ use Blue\Tools\Api\Client;
 
 $client = new Client('user_id', 'secret', 'https://baseurl.com');
 
-/** @var ResponseInterface $response */
+/** @var \GuzzleHttp\Psr7\ResponseInterface $response */
 $response = $client->get('api/list_things', ['param' => 'value']);
 ```
 
@@ -30,15 +30,21 @@ Installation
 Update `composer.json`:
 ```
 "require": {
-    "bluestatedigital/tools-api-client": "~2.0"
+    "bluestatedigital/tools-api-client": "~3.0"
 }
 ```
 
-Handling Responses
+Handling HTTP Exceptions
 ------------------
+By default, Guzzle throws a descendent of `\GuzzleHttp\TransferException` (which itself descends from `\RuntimeException`) when an HTTP protocol error (`4XX` or `5XX` status) is encountered. If you want to prevent these exceptions from being thrown, you can pass the `http_errors` option to the API Client's constructor. E.g.:
 
-By default the API client uses Guzzle's RequestException for any responses above HTTP 300. To use your own handler you may either create your own Guzzle error plugin or emitter (see Guzzle 5 documentation), or disable Guzzle's handler entirely by using the following code:
 ```
 // Prevent Exceptions on non-actionable HTTP response (400 and 500 range)
-$client->setRequestOption('exceptions', false);
+$client = new \Blue\Tools\Api\Client(
+    'user_id', 
+    'secret', 
+    'https://baseurl.com',
+    ['http_errors' => false]    
+);
 ```
+Any other [request options](http://docs.guzzlephp.org/en/latest/request-options.html) supported by Guzzle can also be passed to the Client constructor in this array.
