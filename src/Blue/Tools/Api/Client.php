@@ -55,6 +55,9 @@ class Client
     /** @var GuzzleClient */
     private $guzzleClient;
 
+    /** @var array */
+    private $requestOptions;
+
     /**
      * @param string $id
      * @param string $secret
@@ -240,6 +243,35 @@ class Client
     public function setLogger(LoggerInterface $logger)
     {
         $this->logger = $logger;
+    }
+
+    /**
+     * Returns the specified request option or all options if none specified
+     * @param $keyOrPath
+     * @return array|mixed|null
+     */
+    public function getRequestOption($keyOrPath = null)
+    {
+        return $this->guzzleClient->getConfig($keyOrPath);
+    }
+
+    /**
+     * Sets a request option for future requests
+     * @param $keyOrPath
+     * @param $value
+     * @return $this
+     */
+    public function setRequestOption($keyOrPath, $value)
+    {
+        $this->requestOptions = array_merge(
+            $this->requestOptions,
+            [$keyOrPath => $value]
+        );
+
+        $handler = $this->guzzleClient->getConfig('handler');
+        $this->guzzleClient = $this->createGuzzleClient($handler, $this->requestOptions);
+
+        return $this;
     }
 
 }
