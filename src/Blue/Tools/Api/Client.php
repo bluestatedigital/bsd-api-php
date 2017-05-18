@@ -2,14 +2,13 @@
 
 namespace Blue\Tools\Api;
 
-use GuzzleHttp;
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\HandlerStack;
-use GuzzleHttp\Message\FutureResponse;
-use GuzzleHttp\Message\Response;
 use GuzzleHttp\Middleware;
+use function GuzzleHttp\Psr7\build_query;
+use function GuzzleHttp\Psr7\modify_request;
+use function GuzzleHttp\Psr7\parse_query;
 use InvalidArgumentException;
-use League\Uri\Components\Query;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
@@ -86,29 +85,28 @@ class Client
         $handlerStack->push(Middleware::mapRequest(
             function (RequestInterface $request) {
                 $uri = $request->getUri();
-                $query = new Query($uri->getQuery());
+
+                /** @var array $query */
+                $query = parse_query($request->getUri()->getQuery());
 
                 /*
                  * Add id and version to the query
                  */
-                $query = $query->merge(Query::createFromArray([
-                    'api_id'  => $this->id,
-                    'api_ver' => '2',
-                ]));
+                $query['api_id'] = $this->id;
+                $query['api_ver'] = 2;
 
                 /*
                  * Add timestamp to the query
                  */
-                if (!$query->hasKey('api_ts')) {
-                    $query = $query->merge(Query::createFromArray([
-                        'api_ts' => time(),
-                    ]));
+                if (!isset($query['api_ts'])) {
+                    $query['api_ts'] = time();
                 }
-                $query = $query->merge(Query::createFromArray([
-                    'api_mac' => $this->generateMac($uri->getPath(), $query),
-                ]));
 
-                return $request->withUri($uri->withQuery((string) $query));
+                $mac = $this->generateMac($uri->getPath(), build_query($query));
+
+                $query['api_mac'] = $mac;
+
+                return modify_request($request, ['query' => build_query($query)]);
             }
         ));
         $this->guzzleClient = new GuzzleClient(
@@ -165,7 +163,7 @@ class Client
     /**
      * @param ResponseInterface $response
      *
-     * @return FutureResponse|Response|ResponseInterface|\GuzzleHttp\Ring\Future\FutureInterface|null
+     * @return ResponseInterface
      */
     private function resolve(ResponseInterface $response)
     {
@@ -207,23 +205,22 @@ class Client
     /**
      * Creates a hash based on request parameters.
      *
-     * @param string                      $path
-     * @param League\Uri\Components\Query $query
+     * @param string $path
+     * @param string $query
      *
      * @return string
      */
-    private function generateMac($path, Query $query)
+    private function generateMac($path, $queryString)
     {
-        // build query string from given parameters
-        $queryString = urldecode((string) $query);
+        $query = parse_query($queryString);
 
         // combine strings to build the signing string
-        $apiId = $query->getValue('api_id');
-        $apiTs = $query->getValue('api_ts');
+        $apiId = $query['api_id'];
+        $apiTs = $query['api_ts'];
         $signingString = $apiId."\n"
             .$apiTs."\n"
             .$path."\n"
-            .$queryString;
+            .urldecode($queryString);
         $mac = hash_hmac('sha1', $signingString, $this->secret);
         return $mac;
     }
