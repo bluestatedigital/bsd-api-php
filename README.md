@@ -1,6 +1,8 @@
 Blue State Digital PHP API Client
 =================================
 
+[![Build Status](https://travis-ci.org/bluestatedigital/bsd-api-php.svg?branch=master)](https://travis-ci.org/bluestatedigital/bsd-api-php)
+
 This library provides an interface to the BSD Tools.
 
 Example usage:
