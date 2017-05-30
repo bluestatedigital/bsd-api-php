@@ -28,7 +28,7 @@ class SigningHandler
 
 
         // validate auth config
-        $auth = $options['auth'];
+        $auth = isset($options['auth']) ? $options['auth'] : null;
         if ((!is_array($auth)) || (count($auth) < 3) || ($auth[2] != Client::$AUTH_TYPE)) {
             throw new \RuntimeException("Authorization information not provided");
         }

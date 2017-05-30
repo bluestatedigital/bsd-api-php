@@ -82,11 +82,17 @@ class Client
         $handlerStack->push(
             function(callable $handler) {
                 return new SigningHandler($handler);
-            }
+            },
+            self::$AUTH_TYPE . '_auth'
         );
         $this->guzzleClient = new GuzzleClient(
             [
                 'handler' => $handlerStack,
+                'auth' => [
+                    $this->id,
+                    $this->secret,
+                    self::$AUTH_TYPE
+                ]
             ]
         );
     }
@@ -104,11 +110,6 @@ class Client
         $response = $this->guzzleClient->get(
             $this->baseUrl.$apiPath,
             [
-                'auth' => [
-                    $this->id,
-                    $this->secret,
-                    self::$AUTH_TYPE,
-                ],
                 'query'  => $queryParams,
                 'future' => false,
             ]
