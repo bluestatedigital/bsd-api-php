@@ -82,33 +82,13 @@ class Client
         $this->baseUrl = $validatedUrl.'/page/api/';
 
         $handlerStack = HandlerStack::create();
-        $handlerStack->push(Middleware::mapRequest(
-            function (RequestInterface $request) {
-                $uri = $request->getUri();
 
-                /** @var array $query */
-                $query = parse_query($request->getUri()->getQuery());
 
-                /*
-                 * Add id and version to the query
-                 */
-                $query['api_id'] = $this->id;
-                $query['api_ver'] = 2;
-
-                /*
-                 * Add timestamp to the query
-                 */
-                if (!isset($query['api_ts'])) {
-                    $query['api_ts'] = time();
-                }
-
-                $mac = $this->generateMac($uri->getPath(), build_query($query));
-
-                $query['api_mac'] = $mac;
-
-                return modify_request($request, ['query' => build_query($query)]);
+        $handlerStack->push(
+            function(callable $handler) {
+                return new SigningHandler($handler);
             }
-        ));
+        );
         $this->guzzleClient = new GuzzleClient(
             [
                 'handler' => $handlerStack,
@@ -129,6 +109,11 @@ class Client
         $response = $this->guzzleClient->get(
             $this->baseUrl.$apiPath,
             [
+                'auth' => [
+                    $this->id,
+                    $this->secret,
+                    self::$AUTH_TYPE,
+                ],
                 'query'  => $queryParams,
                 'future' => false,
             ]
@@ -202,28 +187,6 @@ class Client
         return $response;
     }
 
-    /**
-     * Creates a hash based on request parameters.
-     *
-     * @param string $path
-     * @param string $query
-     *
-     * @return string
-     */
-    private function generateMac($path, $queryString)
-    {
-        $query = parse_query($queryString);
-
-        // combine strings to build the signing string
-        $apiId = $query['api_id'];
-        $apiTs = $query['api_ts'];
-        $signingString = $apiId."\n"
-            .$apiTs."\n"
-            .$path."\n"
-            .urldecode($queryString);
-        $mac = hash_hmac('sha1', $signingString, $this->secret);
-        return $mac;
-    }
 
     /**
      * @param int $deferredResultMaxAttempts
