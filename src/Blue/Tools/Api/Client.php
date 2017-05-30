@@ -4,12 +4,7 @@ namespace Blue\Tools\Api;
 
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\HandlerStack;
-use GuzzleHttp\Middleware;
-use function GuzzleHttp\Psr7\build_query;
-use function GuzzleHttp\Psr7\modify_request;
-use function GuzzleHttp\Psr7\parse_query;
 use InvalidArgumentException;
-use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
@@ -227,18 +222,23 @@ class Client
      */
     public function getRequestOption($keyOrPath = null)
     {
-        return $this->guzzleClient->getDefaultOption($keyOrPath);
+        return $this->guzzleClient->getConfig($keyOrPath);
     }
 
     /**
      * Sets a request option for future requests
-     * @param $keyOrPath
+     * @param $key
      * @param $value
      * @return $this
      */
-    public function setRequestOption($keyOrPath, $value)
+    public function setRequestOption($key, $value)
     {
-        $this->guzzleClient->setDefaultOption($keyOrPath, $value);
+        $config = array_merge(
+            $this->guzzleClient->getConfig(),
+            [$key => $value]
+        );
+
+        $this->guzzleClient = new GuzzleClient($config);
         return $this;
     }
 }
