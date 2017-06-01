@@ -2,6 +2,7 @@
 
 namespace Blue\Tools\Api;
 
+use Carbon\Carbon;
 use function GuzzleHttp\Psr7\build_query;
 use function GuzzleHttp\Psr7\modify_request;
 use function GuzzleHttp\Psr7\parse_query;
@@ -45,7 +46,8 @@ class SigningHandler
          * Add timestamp to the query
          */
         if (!isset($query['api_ts'])) {
-            $query['api_ts'] = time();
+            $now = Carbon::now();
+            $query['api_ts'] = $now->getTimestamp();
         }
 
         $mac = $this->generateMac($uri->getPath(), build_query($query, false), $secret);
