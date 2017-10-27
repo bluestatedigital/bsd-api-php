@@ -46,6 +46,11 @@ class SigningHandler
          * Add timestamp to the query
          */
         if (!isset($query['api_ts'])) {
+
+            if(empty(ini_get('date.timezone'))){
+                date_default_timezone_set('UTC');
+            }
+
             $now = Carbon::now();
             $query['api_ts'] = $now->getTimestamp();
         }
