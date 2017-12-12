@@ -26,6 +26,13 @@ $client->setDeferredResultInterval(30);
 $client->setDeferredResultMaxAttempts(10);
 ```
 
+The client polling for deferred calls can also be disabled.  When disabled, the deferred ID will be returned:
+
+```
+// Disable polling for the results and return the deferred ID
+$client->setProcessDeferredResults(false);
+```
+
 Installation
 ------------
 

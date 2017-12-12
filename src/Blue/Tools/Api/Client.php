@@ -40,6 +40,9 @@ class Client
     // Configuration
     //--------------------
 
+    /** @var bool */
+    protected $processDeferredResults = true;
+
     /** @var int */
     private $deferredResultMaxAttempts = 20;
 
@@ -151,7 +154,7 @@ class Client
     {
 
         // An HTTP status of 202 indicates that this request was deferred
-        if ($response->getStatusCode() == 202) {
+        if ($response->getStatusCode() == 202 && $this->processDeferredResults) {
             $key = $response->getBody()->getContents();
 
             $attempts = $this->deferredResultMaxAttempts;
@@ -199,6 +202,14 @@ class Client
     public function setDeferredResultInterval($deferredResultInterval)
     {
         $this->deferredResultInterval = $deferredResultInterval;
+    }
+
+    /**
+     * @param bool $processDeferredResults
+     */
+    public function setProcessDeferredResults($processDeferredResults)
+    {
+        $this->processDeferredResults = $processDeferredResults;
     }
 
     /**
