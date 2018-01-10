@@ -128,10 +128,11 @@ class Client
      * @param $apiPath
      * @param array  $queryParams
      * @param string $data
+     * @param array $formParams
      *
      * @return ResponseInterface
      */
-    public function post($apiPath, $queryParams = [], $data = '')
+    public function post($apiPath, $queryParams = [], $data = '', $formParams = [])
     {
         $response = $this->guzzleClient->post(
             $this->baseUrl.$apiPath,
@@ -139,6 +140,7 @@ class Client
                 'query'  => $queryParams,
                 'body'   => $data,
                 'future' => false,
+                'form_params' => $formParams
             ]
         );
 
@@ -166,7 +168,7 @@ class Client
                     [
                         'future' => false,
                         'query'  => [
-                            'deferred_id' => $key,
+                        'deferred_id' => $key,
                         ],
                     ]
                 );
