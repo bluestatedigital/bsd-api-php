@@ -127,21 +127,32 @@ class Client
      *
      * @param $apiPath
      * @param array  $queryParams
-     * @param string $data
-     * @param array $formParams
+     * @param string $body
+     * @param array  $formParams
+     * @param array  $multipart
      *
      * @return ResponseInterface
      */
-    public function post($apiPath, $queryParams = [], $data = '', $formParams = [])
+    public function post($apiPath, $queryParams = [], $body = '', $formParams = [], $multipart = [])
     {
+
+        $requestOptions['query'] = $queryParams;
+
+        if($body){
+            $requestOptions['body'] = $body;
+        }
+
+        if($formParams){
+            $requestOptions['form_params'] = $formParams;
+        }
+
+        if($multipart){
+            $requestOptions['multipart'] = $multipart;
+        }
+
         $response = $this->guzzleClient->post(
             $this->baseUrl.$apiPath,
-            [
-                'query'  => $queryParams,
-                'body'   => $data,
-                'future' => false,
-                'form_params' => $formParams
-            ]
+            $requestOptions
         );
 
         return $this->resolve($response);
