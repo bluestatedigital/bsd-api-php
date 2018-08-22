@@ -177,7 +177,19 @@ class Client
         // An HTTP status of 202 indicates that this request was deferred
         if ($response->getStatusCode() == 202) {
 
-            $key = $response->getBody()->getContents();
+            $content = $response->getBody()->getContents();
+            $res = json_decode($content);
+            if (json_last_error() != JSON_ERROR_NONE) {
+                $key = $content;
+            }
+            else if(isset($res->mailing_triggered_id)) {
+                // There is no need to check the deferred result for triggered mailing.
+                // Once the initial API is successful, we assume that the triggered mailing will be sent properly.
+                return $response;
+            }
+            else {
+                $key = $content;
+            }
 
             $attempts = $this->deferredResultMaxAttempts;
 
