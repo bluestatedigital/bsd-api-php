@@ -183,8 +183,8 @@ class Client
                 $key = $content;
             }
             else if(isset($res->mailing_triggered_id)) {
-                // There is no need to check the deferred result for triggered mailing.
-                // Once the initial API is successful, we assume that the triggered mailing will be sent properly.
+                // The send_triggered_email API uses 202 to indicate something other than a traditional deferred result.
+                // Use get_triggered_send to verify the status of a triggered email.
                 return $response;
             }
             else {
