@@ -168,7 +168,19 @@ class Client
 
         // An HTTP status of 202 indicates that this request was deferred
         if ($response->getStatusCode() == 202 && $this->processDeferredResults) {
-            $key = $response->getBody()->getContents();
+            $content = $response->getBody()->getContents();
+            $res = json_decode($content);
+            if (json_last_error() != JSON_ERROR_NONE) {
+                $key = $content;
+            }
+            else if(isset($res->mailing_triggered_id)) {
+                // The send_triggered_email API uses 202 to indicate something other than a traditional deferred result.
+                // Use get_triggered_send to verify the status of a triggered email.
+                return $response;
+            }
+            else {
+                $key = $content;
+            }
 
             $attempts = $this->deferredResultMaxAttempts;
 
